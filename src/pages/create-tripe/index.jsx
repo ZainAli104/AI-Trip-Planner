@@ -1,16 +1,30 @@
+import axios from "axios";
 import {toast} from "sonner";
-import {useEffect, useState} from "react";
+import {useState} from "react";
+import {FcGoogle} from "react-icons/fc";
+import {useGoogleLogin} from "@react-oauth/google";
+import {collection,addDoc} from "firebase/firestore";
+import {AiOutlineLoading3Quarters} from "react-icons/ai";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 
+import {db} from "@/service/firebaseConfig.js";
 import {Input} from "@/components/ui/input.jsx";
 import {Button} from "@/components/ui/button.jsx";
 import {chatSession} from "@/service/AIModel.jsx";
 import {AI_PROMPT, SelectBudgetOptions, SelectTravelsList} from "@/constants/options.jsx";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader, DialogTitle
+} from "@/components/ui/dialog";
 
 const CreateTripePage = () => {
     const [place, setPlace] = useState();
+    const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState([]);
+    const [openDialog, setOpenDialog] = useState(false);
 
     const handleInputChange = (name, value) => {
         setFormData({
@@ -19,29 +33,69 @@ const CreateTripePage = () => {
         })
     };
 
-    useEffect(() => {
-        console.log(formData)
-    }, [formData]);
+    const login = useGoogleLogin({
+        onSuccess: async (codeResponse) => {
+            await GetUserProfile(codeResponse)
+        },
+        onError: (error) => console.error(error),
+    });
+
+    const GetUserProfile = async (tokenInfo) => {
+        const res = await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo.access_token}`, {
+            headers: {
+                Authorization: `Bearer ${tokenInfo.access_token}`,
+                Accept: 'application/json'
+            }
+        });
+
+        localStorage.setItem('user', JSON.stringify(res.data))
+        setOpenDialog(false)
+        await onGenerateTrip()
+    };
 
     const onGenerateTrip = async () => {
-        if (!formData.location || !formData.noOfDays || !formData.budget || !formData.travelWith) {
-            toast("Please fill all the fields");
-            return;
-        }
-        if (formData.noOfDays > 5) {
-            toast("You can't plan a trip for more than 5 days");
-            return;
-        }
+        try {
+            setLoading(true);
+            const user = localStorage.getItem("user")
+            if (!user) {
+                setOpenDialog(true);
+                return
+            }
 
-        const FINAL_PROMPT = AI_PROMPT
-            .replace('{location}', formData.location.label)
-            .replace('{noOfDays}', formData.noOfDays)
-            .replace('{travelWith}', formData.travelWith)
-            .replace('{budget}', formData.budget)
-            .replace('{noOfDays}', formData.noOfDays);
+            if (!formData.location || !formData.noOfDays || !formData.budget || !formData.travelWith) {
+                toast("Please fill all the fields");
+                return;
+            }
+            if (formData.noOfDays > 5) {
+                toast("You can't plan a trip for more than 5 days");
+                return;
+            }
 
-        const result = await chatSession.sendMessage(FINAL_PROMPT);
-        console.log(result.response.text());
+            const FINAL_PROMPT = AI_PROMPT
+                .replace('{location}', formData.location.label)
+                .replace('{noOfDays}', formData.noOfDays)
+                .replace('{travelWith}', formData.travelWith)
+                .replace('{budget}', formData.budget)
+                .replace('{noOfDays}', formData.noOfDays);
+
+            const result = await chatSession.sendMessage(FINAL_PROMPT);
+            await saveAITrip(result.response.text());
+        } catch (e) {
+            console.error(e);
+            toast("Something went wrong");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const saveAITrip = async (trip) => {
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        await addDoc(collection(db, "AITrips"), {
+            userSelection: formData,
+            tripData: JSON.parse(trip),
+            userEmail: user.email
+        });
     };
 
     return (
@@ -118,10 +172,32 @@ const CreateTripePage = () => {
             </div>
 
             <div className="my-10 flex justify-end">
-                <Button onClick={onGenerateTrip}>
-                    Generate Trip
+                <Button onClick={onGenerateTrip} disabled={loading}>
+                    {loading ?
+                        <AiOutlineLoading3Quarters className="h-7 w-7 animate-spin" />
+                        : "Generate Trip"
+                    }
                 </Button>
             </div>
+
+            <Dialog open={openDialog}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>
+                            <img src="/logo.svg" alt="logo"/>
+                            <h2 className="text-bold text-lg mt-5">Sign In with Google</h2>
+                        </DialogTitle>
+                        <DialogDescription>
+                            Sign In to the app with Google authentication securely
+
+                            <Button className="w-full mt-5 flex items-center gap-3" onClick={login}>
+                                <FcGoogle className="h-7 w-7"/>
+                                Sign In with Google
+                            </Button>
+                        </DialogDescription>
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
