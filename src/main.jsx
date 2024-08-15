@@ -8,6 +8,7 @@ import App from './App.jsx'
 import {Toaster} from "@/components/ui/sonner.jsx";
 import Header from "@/components/custom/Header.jsx";
 import CreateTripe from "@/pages/create-tripe/index.jsx";
+import ViewTrip from "@/pages/view-trip/[tripeId]/index.jsx";
 
 const router = createBrowserRouter([
     {
@@ -17,8 +18,12 @@ const router = createBrowserRouter([
     {
         path: '/create-trip',
         element: <CreateTripe/>
-    }
-])
+    },
+    {
+        path: '/view-trip/:tripId',
+        element: <ViewTrip/>
+    },
+]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>

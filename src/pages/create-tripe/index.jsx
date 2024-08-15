@@ -2,6 +2,7 @@ import axios from "axios";
 import {toast} from "sonner";
 import {useState} from "react";
 import {FcGoogle} from "react-icons/fc";
+import {useNavigate} from "react-router-dom";
 import {useGoogleLogin} from "@react-oauth/google";
 import {collection,addDoc} from "firebase/firestore";
 import {AiOutlineLoading3Quarters} from "react-icons/ai";
@@ -20,6 +21,8 @@ import {
 } from "@/components/ui/dialog";
 
 const CreateTripePage = () => {
+    const navigate = useNavigate();
+
     const [place, setPlace] = useState();
     const [loading, setLoading] = useState(false);
 
@@ -91,11 +94,13 @@ const CreateTripePage = () => {
     const saveAITrip = async (trip) => {
         const user = JSON.parse(localStorage.getItem("user"));
 
-        await addDoc(collection(db, "AITrips"), {
+        const result = await addDoc(collection(db, "AITrips"), {
             userSelection: formData,
             tripData: JSON.parse(trip),
             userEmail: user.email
         });
+
+        navigate('/trip-view/'+result.id);
     };
 
     return (
