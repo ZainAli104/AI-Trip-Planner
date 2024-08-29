@@ -3,16 +3,14 @@ import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import {doc, getDoc} from "firebase/firestore";
 
+import Hotels from "../components/Hotels.jsx";
 import {db} from "@/service/firebaseConfig.js";
+import InfoSection from "../components/InfoSection.jsx";
 
 const ViewTrip = () => {
     const {tripId} = useParams();
 
     const [trip, setTrip] = useState();
-
-    useEffect(() => {
-        tripId && getTripData();
-    }, [tripId]);
 
     /***
      * Get trip data
@@ -23,6 +21,7 @@ const ViewTrip = () => {
             const dosSnap = await getDoc(docRef);
 
             if (dosSnap.exists()) {
+                console.log("1", dosSnap.data());
                 setTrip(dosSnap.data());
             } else {
                 toast.error("No trip found!");
@@ -32,11 +31,17 @@ const ViewTrip = () => {
         }
     };
 
+    useEffect(() => {
+        tripId && getTripData();
+    }, [tripId]);
+
     return (
-        <div>
+        <div className="p-10 md:px-20 lg:px-44 xl:px-56">
             {/*  Information Section  */}
+            <InfoSection trip={trip} />
 
             {/*  Recommended Hotels  */}
+            <Hotels trip={trip} />
 
             {/*  Daily Plan  */}
 
