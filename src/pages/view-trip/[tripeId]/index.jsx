@@ -5,6 +5,7 @@ import {doc, getDoc} from "firebase/firestore";
 
 import Hotels from "../components/Hotels.jsx";
 import {db} from "@/service/firebaseConfig.js";
+import Footer from "@/components/custom/Footer.jsx";
 import InfoSection from "../components/InfoSection.jsx";
 import PlacesToVisit from "../components/PlacesToVisit.jsx";
 
@@ -47,6 +48,7 @@ const ViewTrip = () => {
             <PlacesToVisit trip={trip} />
 
             {/*  Footer  */}
+            <Footer />
         </div>
     );
 };
