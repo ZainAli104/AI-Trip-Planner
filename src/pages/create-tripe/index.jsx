@@ -100,7 +100,7 @@ const CreateTripePage = () => {
             userEmail: user.email
         });
 
-        navigate('/trip-view/'+result.id);
+        navigate('/view-trip/'+result.id);
     };
 
     return (

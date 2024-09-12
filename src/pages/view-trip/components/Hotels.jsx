@@ -1,5 +1,4 @@
-{/* eslint-disable react/prop-types */
-}
+{/* eslint-disable react/prop-types */}
 
 import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
@@ -33,7 +32,7 @@ const Hotels = ({trip}) => {
         <div>
             <h2 className="font-bold text-xl mt-5">Hotel Recommendation</h2>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
+            <div className="flex flex-wrap gap-5 justify-center">
                 {trip?.tripData?.hotelOptions?.map((hotel, index) => (
                     <Link
                         key={index}
@@ -42,7 +41,7 @@ const Hotels = ({trip}) => {
                     >
                     <div
                         className="flex items-center justify-between flex-col mt-5 hover:cursor-pointer
-                         hover:scale-105 transition-all"
+                         hover:scale-105 transition-all rounded-xl overflow-hidden shadow-2xl pb-7"
                     >
                         <img
                             src={validImageUrl[hotel.hotelImageUrl] ? hotel.hotelImageUrl : "/images/trip-view-page.jpg"}
