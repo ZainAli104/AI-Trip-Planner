@@ -21,7 +21,6 @@ const ViewTrip = () => {
             const dosSnap = await getDoc(docRef);
 
             if (dosSnap.exists()) {
-                console.log("1", dosSnap.data());
                 setTrip(dosSnap.data());
             } else {
                 toast.error("No trip found!");

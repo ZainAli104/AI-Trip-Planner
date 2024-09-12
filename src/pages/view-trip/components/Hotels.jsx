@@ -1,5 +1,7 @@
-{/* eslint-disable react/prop-types */}
+{/* eslint-disable react/prop-types */
+}
 
+import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
 
 const Hotels = ({trip}) => {
@@ -15,7 +17,7 @@ const Hotels = ({trip}) => {
             setValidImageUrl(results);
         };
 
-         checkImageUrls();
+        checkImageUrls();
     }, [trip]);
 
     const isImageUrlValid = (url) => {
@@ -33,19 +35,28 @@ const Hotels = ({trip}) => {
 
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
                 {trip?.tripData?.hotelOptions?.map((hotel, index) => (
-                    <div key={index} className="flex items-center justify-between flex-col mt-5">
+                    <Link
+                        key={index}
+                        to={`https://www.google.com/maps/search/?api=1&query=${hotel.hotelAddress}`}
+                        target={"_blank"}
+                    >
+                    <div
+                        className="flex items-center justify-between flex-col mt-5 hover:cursor-pointer
+                         hover:scale-105 transition-all"
+                    >
                         <img
                             src={validImageUrl[hotel.hotelImageUrl] ? hotel.hotelImageUrl : "/images/trip-view-page.jpg"}
                             alt={hotel.hotelName}
                             className="w-full h-44 object-cover rounded-lg"
                         />
-                        <div className="my-2">
-                            <h2 className="font-medium text-lg">{hotel.hotelName}</h2>
-                        </div>
-                        <div>
-                            <h2 className="font-bold text-lg">{hotel.price}</h2>
+                        <div className="my-2 flex flex-col gap-2">
+                            <h2 className="font-medium text-lg">{hotel?.hotelName}</h2>
+                            <h2 className="text-xs text-gray-500">📍 {hotel?.hotelAddress}</h2>
+                            <h2 className="text-sm">💰 {hotel?.price}</h2>
+                            <h2 className="text-sm">⭐ {hotel?.rating} stars</h2>
                         </div>
                     </div>
+                    </Link>
                 ))}
             </div>
         </div>
