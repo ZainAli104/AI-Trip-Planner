@@ -1,13 +1,33 @@
 {/* eslint-disable react/prop-types */}
+
+import {useEffect, useState} from "react";
 import { IoIosSend } from "react-icons/io";
 
 import {Button} from "@/components/ui/button.jsx";
+import {GetPlaceDetails, PHOTO_REF_URL} from "@/service/GlobalApi.jsx";
 
 const InfoSection = ({trip}) => {
+    const [photoUrl, setPhotoUrl] = useState('');
+
+    const GetPlacePhoto = async () => {
+        const data = {
+            textQuery: trip?.userSelection?.location?.label
+        }
+        const response = await GetPlaceDetails(data)
+        const images = response.data
+
+        const photoUrl = PHOTO_REF_URL.replace('{NAME}', images.places[0].photos[3].name)
+        setPhotoUrl(photoUrl);
+    };
+
+    useEffect(() => {
+        trip && GetPlacePhoto();
+    }, [trip]);
+
     return (
         <div>
             <img
-                src="/images/trip-view-page.jpg"
+                src={photoUrl}
                 alt="trip"
                 className="w-full h-96 object-cover rounded-xl"
             />

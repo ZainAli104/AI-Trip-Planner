@@ -1,39 +1,35 @@
 {/* eslint-disable react/prop-types */}
-
 import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
 
+import {GetPlaceDetails, PHOTO_REF_URL} from "@/service/GlobalApi.jsx";
+
 const PlaceCardItem = ({place}) => {
-    const [imageUrl, setImageUrl] = useState("/images/trip-view-page.jpg");
+    const [photoUrl, setPhotoUrl] = useState('');
+
+    const GetPlacePhoto = async () => {
+        const data = {
+            textQuery: place.placeName
+        }
+        const response = await GetPlaceDetails(data)
+        const images = response.data
+
+        const photoUrl = PHOTO_REF_URL.replace('{NAME}', images.places[0].photos[3].name)
+        setPhotoUrl(photoUrl);
+    };
 
     useEffect(() => {
-        const returnValidImageUrl = async (url) => {
-            const flag = await new Promise((resolve) => {
-                const img = new Image();
-                img.onload = () => resolve(true);
-                img.onerror = () => resolve(false);
-                img.src = url;
-            });
-
-            return flag ? url : "/images/trip-view-page.jpg";
-        };
-
-        const checkImageUrl = async () => {
-            const validUrl = await returnValidImageUrl(place.placeImageUrl);
-            setImageUrl(validUrl);
-        };
-
-        checkImageUrl();
-    }, [place.placeImageUrl]);
+        place.placeName && GetPlacePhoto();
+    }, [place]);
 
     return (
         <Link to={`https://www.google.com/maps/search/?api=1&query=${place.placeName}`} target={"_blank"}>
             <div
                 className="border rounded-xl p-3 mt-2 flex gap-5 hover:scale-105 transition-all hover:shadow-md hover:cursor-pointer">
                 <img
-                    src={imageUrl}
+                    src={photoUrl}
                     alt={"place-image"}
-                    className="w-[130px] h-[130px] rounded-xl"
+                    className="w-[180px] h-[130px] object-cover rounded-xl"
                 />
 
                 <div>
