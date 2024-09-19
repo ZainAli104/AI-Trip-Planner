@@ -29,6 +29,12 @@ const CreateTripePage = () => {
     const [formData, setFormData] = useState([]);
     const [openDialog, setOpenDialog] = useState(false);
 
+    const onOpenChange = (open) => {
+        if (!open) {
+            setOpenDialog(false);
+        }
+    };
+
     const handleInputChange = (name, value) => {
         setFormData({
             ...formData,
@@ -185,7 +191,7 @@ const CreateTripePage = () => {
                 </Button>
             </div>
 
-            <Dialog open={openDialog}>
+            <Dialog open={openDialog} onOpenChange={onOpenChange}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>
