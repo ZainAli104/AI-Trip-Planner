@@ -1,7 +1,6 @@
 import axios from "axios";
 import {toast} from "sonner";
 import {useState} from "react";
-import {FcGoogle} from "react-icons/fc";
 import {useNavigate} from "react-router-dom";
 import {useGoogleLogin} from "@react-oauth/google";
 import {collection,addDoc} from "firebase/firestore";
@@ -12,13 +11,8 @@ import {db} from "@/service/firebaseConfig.js";
 import {Input} from "@/components/ui/input.jsx";
 import {Button} from "@/components/ui/button.jsx";
 import {chatSession} from "@/service/AIModel.jsx";
+import SignInModel from "@/components/custom/SignInModel.jsx";
 import {AI_PROMPT, SelectBudgetOptions, SelectTravelsList} from "@/constants/options.jsx";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader, DialogTitle
-} from "@/components/ui/dialog";
 
 const CreateTripePage = () => {
     const navigate = useNavigate();
@@ -59,7 +53,12 @@ const CreateTripePage = () => {
 
         localStorage.setItem('user', JSON.stringify(res.data))
         setOpenDialog(false)
-        await onGenerateTrip()
+
+        if (formData.location && formData.noOfDays && formData.budget && formData.travelWith) {
+            await onGenerateTrip()
+        } else {
+            window.location.reload();
+        }
     };
 
     const onGenerateTrip = async () => {
@@ -191,24 +190,11 @@ const CreateTripePage = () => {
                 </Button>
             </div>
 
-            <Dialog open={openDialog} onOpenChange={onOpenChange}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>
-                            <img src="/logo.svg" alt="logo"/>
-                            <h2 className="text-bold text-lg mt-5">Sign In with Google</h2>
-                        </DialogTitle>
-                        <DialogDescription>
-                            Sign In to the app with Google authentication securely
-
-                            <Button className="w-full mt-5 flex items-center gap-3" onClick={login}>
-                                <FcGoogle className="h-7 w-7"/>
-                                Sign In with Google
-                            </Button>
-                        </DialogDescription>
-                    </DialogHeader>
-                </DialogContent>
-            </Dialog>
+            <SignInModel
+                openDialog={openDialog}
+                onOpenChange={onOpenChange}
+                login={login}
+            />
         </div>
     );
 };
