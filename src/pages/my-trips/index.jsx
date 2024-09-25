@@ -38,6 +38,12 @@ const MyTrips = () => {
                 {userTrips.map((trip, index) => (
                     <UserTripCardItem key={index} trip={trip} />
                 ))}
+
+                {userTrips.length === 0 && (
+                    <div className="w-full text-center">
+                        <h2 className="text-lg">No trips found</h2>
+                    </div>
+                )}
             </div>
         </div>
     );

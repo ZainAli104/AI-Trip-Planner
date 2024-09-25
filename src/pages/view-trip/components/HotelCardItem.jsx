@@ -39,8 +39,8 @@ const HotelCardItem = ({hotel}) => {
                     className="w-[300px] h-[200px] object-cover rounded-lg"
                 />
                 <div className="my-2 flex flex-col gap-2">
-                    <h2 className="font-medium text-lg truncate">{hotel?.hotelName}</h2>
-                    <h2 className="text-xs text-gray-500 truncate">📍 {hotel?.hotelAddress}</h2>
+                    <h2 className="font-medium text-lg">{hotel?.hotelName}</h2>
+                    <h2 className="text-xs text-gray-500">📍 {hotel?.hotelAddress}</h2>
                     <h2 className="text-sm">💰 {hotel?.price}</h2>
                     <h2 className="text-sm">⭐ {hotel?.rating} stars</h2>
                 </div>
